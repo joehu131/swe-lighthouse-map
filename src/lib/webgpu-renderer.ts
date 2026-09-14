@@ -153,7 +153,10 @@ export class WebGPURenderer {
     dev.queue.writeBuffer(this.instanceBuffer, 0, instanceData);
 
     // 4. Load Plate & Generate Mipmaps
-    await this.loadPlateAndGenerateMipmaps('/data/plate.png');
+    const baseUrl = import.meta.env.BASE_URL.endsWith('/')
+      ? import.meta.env.BASE_URL
+      : `${import.meta.env.BASE_URL}/`;
+    await this.loadPlateAndGenerateMipmaps(`${baseUrl}data/plate.png`);
 
     // 5. Build Render Pipelines
     await this.buildPipelines();

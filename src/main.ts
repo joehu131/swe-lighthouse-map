@@ -25,7 +25,10 @@ async function bootstrap() {
   }
 
   // 2. Fetch Swedish Lighthouse Manifest
-  const res = await fetch('/data/manifest.json');
+  const baseUrl = import.meta.env.BASE_URL.endsWith('/')
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
+  const res = await fetch(`${baseUrl}data/manifest.json`);
   if (!res.ok) {
     throw new Error(`Failed to load manifest.json (${res.status})`);
   }

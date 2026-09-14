@@ -94,6 +94,8 @@ The map covers the Swedish coast, archipelagos, and major inland lakes (Vänern,
 ```
 swe-lighthouse-map/
 ├── index.html                 # Main HTML entry point
+├── .github/workflows/
+│   └── deploy.yml             # GitHub Actions automated Pages deployment
 ├── public/
 │   └── data/                  # Precomputed terrain plate and lighthouse manifest
 ├── pipeline/                  # Data extraction and plate generation scripts
