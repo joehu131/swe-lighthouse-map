@@ -1,6 +1,6 @@
 # Svenska Fyrar · Swedish Lighthouse Map
 
-An interactive, real-time WebGPU visualization of Sweden's coastal and navigational lighthouses, sweeping light beams, and nautical sectors over digital elevation relief.
+An interactive, real-time WebGPU visualization of Sweden's coastal and navigational lighthouses, sweeping light beams, and nautical sectors.
 
 <p align="center">
   <img src="public/preview.png" alt="Svenska Fyrar · Swedish Lighthouse Map" width="680" style="max-width: 100%; border-radius: 8px;">
