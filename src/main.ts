@@ -18,6 +18,11 @@ async function bootstrap() {
   const canvas = document.getElementById('map-canvas') as HTMLCanvasElement;
   if (!appContainer || !canvas) return;
 
+  const loaderCaption = document.querySelector('.loader-caption');
+  if (loaderCaption) {
+    loaderCaption.textContent = i18n.t.loadingTitle;
+  }
+
   // 1. Require WebGPU before doing anything else
   if (!WebGPURenderer.isSupported()) {
     showWebGPUError(appContainer);
@@ -115,9 +120,19 @@ async function bootstrap() {
 
   // 6. Setup Pointer & Gesture Interaction
   setupInteraction(canvas, camera, probe);
+
+  // 7. Dismiss Initial Loading Screen
+  const loader = document.getElementById('initial-loader');
+  if (loader) {
+    loader.classList.add('loaded');
+    setTimeout(() => loader.remove(), 450);
+  }
 }
 
 function showWebGPUError(container: HTMLElement, headline?: string, detail?: string): void {
+  const loader = document.getElementById('initial-loader');
+  if (loader) loader.remove();
+
   // Hide canvas so the background is visible
   const canvas = container.querySelector('canvas');
   if (canvas) canvas.style.display = 'none';

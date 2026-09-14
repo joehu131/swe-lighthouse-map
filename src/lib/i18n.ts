@@ -14,6 +14,7 @@ export const DICTIONARY = {
     themeBtnAria: 'Växla natt- och dagläge',
     langBtnTitle: 'Byt till engelska (ENG)',
     langBtnAria: 'Växla språk mellan svenska och engelska',
+    loadingTitle: 'Läser in sjökort och fyrar...',
 
     searchPlaceholder: 'Sök fyr (t.ex. Vinga, Kullen, Långe Jan)...',
     searchAria: 'Sök fyr',
@@ -93,6 +94,7 @@ export const DICTIONARY = {
     themeBtnAria: 'Toggle night and day mode',
     langBtnTitle: 'Switch language to Swedish (SWE)',
     langBtnAria: 'Toggle language between Swedish and English',
+    loadingTitle: 'Loading nautical chart & lights...',
 
     searchPlaceholder: 'Search lighthouse (e.g. Vinga, Kullen, Långe Jan)...',
     searchAria: 'Search lighthouse',

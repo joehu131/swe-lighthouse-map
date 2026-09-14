@@ -10,6 +10,10 @@
 </head>
 <body>
   <div id="app">
+    <div id="initial-loader" class="initial-loader" role="status" aria-live="polite">
+      <div class="loader-spinner"></div>
+      <div class="loader-caption">Loading nautical chart & lights...</div>
+    </div>
     <canvas id="map-canvas"></canvas>
   </div>
   <script type="module" src="/src/main.ts"></script>
