@@ -1,0 +1,28 @@
+{
+  "name": "swe-lighthouse-map",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:data": "vitest run tests/data-integrity.test.ts",
+    "test:iala": "vitest run tests/iala-parser.test.ts",
+    "test:spatial": "vitest run tests/spatial-hash.test.ts",
+    "test:projection": "vitest run tests/camera-projection.test.ts",
+    "test:shaders": "vitest run tests/shader-syntax.test.ts",
+    "pipeline:extract": "node pipeline/extract_lighthouses.js",
+    "pipeline:plate": "python pipeline/build_plate.py",
+    "pipeline:manifest": "node pipeline/generate_manifest.js",
+    "pipeline:all": "npm run pipeline:extract && npm run pipeline:plate && npm run pipeline:manifest"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.0",
+    "@webgpu/types": "^0.1.54",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0",
+    "vitest": "^3.0.7"
+  }
+}
