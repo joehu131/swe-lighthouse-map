@@ -43,7 +43,7 @@ describe('i18n dictionary and manager', () => {
     i18n.setLanguage('en');
     expect(i18n.lang).toBe('en');
     expect(i18n.t.title).toBe('Swedish Lighthouses');
-    expect(i18n.t.tierMajor).toBe('Coastal Lights');
+    expect(i18n.t.tierMajor).toBe('Coastal lights');
   });
 
   it('toggles cleanly between English and Swedish and notifies subscribers', () => {

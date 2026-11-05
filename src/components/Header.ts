@@ -29,7 +29,7 @@ export function createHeader(
   camera: MapCamera,
   theme: ThemeManager,
   beacons: Beacon[]
-): { header: HTMLElement; settingsBtn: HTMLButtonElement; langBtn: HTMLButtonElement } {
+): { header: HTMLElement; titleGroup: HTMLElement; settingsBtn: HTMLButtonElement; langBtn: HTMLButtonElement } {
   const header = document.createElement('header');
   header.className = 'site-header';
 
@@ -37,7 +37,7 @@ export function createHeader(
   const titleGroup = document.createElement('div');
   titleGroup.className = 'title-group';
 
-  const kickerEl = document.createElement('div');
+  const kickerEl = document.createElement('p');
   kickerEl.className = 'kicker';
   kickerEl.textContent = i18n.t.kicker;
 
@@ -48,17 +48,12 @@ export function createHeader(
   titleGroup.appendChild(kickerEl);
   titleGroup.appendChild(mainTitleEl);
 
-  // Bookmarks dropdown / quick select
+  // Notable lighthouses, shown as a strip of italic place names like on a chart
   const bookmarkNav = document.createElement('nav');
   bookmarkNav.className = 'bookmark-nav';
   bookmarkNav.setAttribute('aria-label', i18n.t.bookmarksAria);
 
-  const bookmarkLabel = document.createElement('span');
-  bookmarkLabel.className = 'bookmark-label';
-  bookmarkLabel.textContent = i18n.t.bookmarksLabel;
-  bookmarkNav.appendChild(bookmarkLabel);
-
-  const bookmarkList = document.createElement('div');
+  const bookmarkList = document.createElement('ul');
   bookmarkList.className = 'bookmark-list';
 
   const bookmarkButtons: { btn: HTMLButtonElement; bm: Bookmark }[] = [];
@@ -79,7 +74,9 @@ export function createHeader(
     });
 
     bookmarkButtons.push({ btn, bm });
-    bookmarkList.appendChild(btn);
+    const item = document.createElement('li');
+    item.appendChild(btn);
+    bookmarkList.appendChild(item);
   }
   bookmarkNav.appendChild(bookmarkList);
 
@@ -104,7 +101,7 @@ export function createHeader(
   settingsBtn.setAttribute('aria-label', i18n.t.settingsBtnAria);
   settingsBtn.setAttribute('aria-expanded', 'false');
   settingsBtn.title = i18n.t.settingsBtnTitle;
-  settingsBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
+  settingsBtn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
 
   const themeBtn = document.createElement('button');
   themeBtn.className = 'icon-action-btn theme-toggle-btn';
@@ -114,8 +111,8 @@ export function createHeader(
   function updateThemeIcon(): void {
     const isDark = theme.mode === 'dark';
     themeBtn.innerHTML = isDark
-      ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`
-      : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
+      ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`
+      : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`;
   }
 
   themeBtn.addEventListener('click', () => {
@@ -128,7 +125,6 @@ export function createHeader(
   function updateTexts(): void {
     kickerEl.textContent = i18n.t.kicker;
     mainTitleEl.textContent = i18n.t.title;
-    bookmarkLabel.textContent = i18n.t.bookmarksLabel;
     bookmarkNav.setAttribute('aria-label', i18n.t.bookmarksAria);
 
     for (const { btn, bm } of bookmarkButtons) {
@@ -158,5 +154,5 @@ export function createHeader(
   header.appendChild(actionGroup);
   container.appendChild(header);
 
-  return { header, settingsBtn, langBtn };
+  return { header, titleGroup, settingsBtn, langBtn };
 }

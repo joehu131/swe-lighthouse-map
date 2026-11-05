@@ -82,7 +82,7 @@ async function bootstrap() {
   renderer.start();
 
   // 5. Mount UI Components
-  const { settingsBtn } = createHeader(appContainer, camera, theme, manifest.beacons);
+  const { titleGroup, settingsBtn } = createHeader(appContainer, camera, theme, manifest.beacons);
   createLightSettings(appContainer, settingsBtn, ({ warmFactor, beamGain, reachMult, bgBrightness }) => {
     renderer.setLightSettings(warmFactor, beamGain, reachMult, bgBrightness);
   });
@@ -116,10 +116,16 @@ async function bootstrap() {
     },
     () => renderer.getSoloBeacon()
   );
-  createSearch(appContainer, camera, probe, manifest.beacons);
+  createSearch(titleGroup, camera, probe, manifest.beacons);
 
   // 6. Setup Pointer & Gesture Interaction
   setupInteraction(canvas, camera, probe);
+
+  // Dev-only handle for driving the camera from the browser console.
+  // Vite replaces import.meta.env.DEV with false in production, so this is removed from the build.
+  if (import.meta.env.DEV) {
+    (window as unknown as { __fyr: unknown }).__fyr = { camera, renderer, probe, manifest };
+  }
 
   // 7. Dismiss Initial Loading Screen
   const loader = document.getElementById('initial-loader');

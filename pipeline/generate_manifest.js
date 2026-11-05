@@ -166,10 +166,12 @@ export function generateManifest() {
     lat_center: (LAT_MIN + LAT_MAX) / 2.0,
     elev_max_m: 2500.0,
     palette: {
-      sea_night: [0.017, 0.029, 0.054],   // Deep oceanic midnight navy (calibrated 175% dusky)
-      land_night: [0.033, 0.044, 0.060],  // Dusky basalt/charcoal land silhouette (calibrated 175%)
-      sea_day: [0.91, 0.94, 0.97],
-      land_day: [0.85, 0.88, 0.90],
+      // Night: dark teal-navy sea, neutral charcoal land. Day: paper sea chart (pale blue water, buff land).
+      // Keep in step with the UI colours in src/style.css.
+      sea_night: [0.010, 0.026, 0.042],
+      land_night: [0.040, 0.041, 0.043],
+      sea_day: [0.80, 0.88, 0.92],
+      land_day: [0.96, 0.89, 0.70],
       sky_beam: [1.0, 0.92, 0.75],        // Warm incandescent golden beam
     },
     look: {

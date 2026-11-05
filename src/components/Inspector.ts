@@ -2,6 +2,8 @@ import type { LighthouseProbe, ProbeState } from '../lib/lighthouse-probe.js';
 import { createSectorRose } from './SectorRose.js';
 import { i18n } from '../lib/i18n.js';
 
+const ICON_CLOSE = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+
 export function createInspector(
   container: HTMLElement,
   probe: LighthouseProbe,
@@ -19,29 +21,8 @@ export function createInspector(
     btn.setAttribute('aria-pressed', isSolo ? 'true' : 'false');
     btn.title = isSolo ? i18n.t.isolateBeamActiveTitle : i18n.t.isolateBeamTitle;
     btn.innerHTML = isSolo
-      ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg><span>${i18n.t.showAllBeams}</span>`
-      : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3m0 14v3M2 12h3m14 0h3"></path></svg><span>${i18n.t.isolateBeam}</span>`;
-  }
-
-  function updatePosition(screenPos: [number, number] | null): void {
-    if (!screenPos) return;
-
-    // Convert device pixels to CSS viewport pixels using DPR
-    const dpr = Math.min(2.0, window.devicePixelRatio || 1.0);
-    const sx = screenPos[0] / dpr;
-    const sy = screenPos[1] / dpr;
-
-    const isRightSide = sx < window.innerWidth * 0.6;
-    const top = Math.min(Math.max(80, sy - 40), window.innerHeight - 460);
-    card.style.top = `${top}px`;
-
-    if (isRightSide) {
-      card.style.left = `${sx + 24}px`;
-      card.style.right = 'auto';
-    } else {
-      card.style.right = `${window.innerWidth - sx + 24}px`;
-      card.style.left = 'auto';
-    }
+      ? `${ICON_CLOSE}<span>${i18n.t.showAllBeams}</span>`
+      : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg><span>${i18n.t.isolateBeam}</span>`;
   }
 
   function renderCard(state: ProbeState): void {
@@ -85,14 +66,14 @@ export function createInspector(
             <h2 class="inspector-title">${f.name}</h2>
             <div class="inspector-coords">${f.lat.toFixed(4)}°N, ${f.lon.toFixed(4)}°E</div>
           </div>
-          <button class="inspector-close-btn" aria-label="${i18n.t.closeCardAria}">×</button>
+          <button class="inspector-close-btn" type="button" aria-label="${i18n.t.closeCardAria}">${ICON_CLOSE}</button>
         </div>
 
         <div class="inspector-badge-row">
-          <span class="optic-badge optic-${f.optic_type}">
+          <p class="optic-badge">
             <span class="optic-label">${opticLabel}</span>
             <span class="optic-sub">${opticSub}</span>
-          </span>
+          </p>
           ${
             onSoloToggle
               ? `<button class="inspector-solo-btn" type="button" aria-label="${i18n.t.isolateBeamTitle}"></button>`
@@ -100,39 +81,31 @@ export function createInspector(
           }
         </div>
 
-        <div class="inspector-metrics-grid">
+        <dl class="inspector-metrics-grid">
           <div class="metric-cell">
-            <span class="metric-label">${i18n.t.metricCharacter}</span>
-            <span class="metric-value font-mono">${f.character}</span>
+            <dt class="metric-label">${i18n.t.metricCharacter}</dt>
+            <dd class="metric-value metric-character">${f.character}</dd>
           </div>
           <div class="metric-cell">
-            <span class="metric-label">${i18n.t.metricRange}</span>
-            <span class="metric-value">${f.range_nm} M</span>
+            <dt class="metric-label">${i18n.t.metricRange}</dt>
+            <dd class="metric-value">${f.range_nm} M</dd>
           </div>
           <div class="metric-cell">
-            <span class="metric-label">${i18n.t.metricHeight}</span>
-            <span class="metric-value">${Math.round(f.height_m)} m</span>
+            <dt class="metric-label">${i18n.t.metricHeight}</dt>
+            <dd class="metric-value">${Math.round(f.height_m)} m</dd>
           </div>
           <div class="metric-cell">
-            <span class="metric-label">${i18n.t.metricPeriod}</span>
-            <span class="metric-value font-mono">${f.period_s}s</span>
+            <dt class="metric-label">${i18n.t.metricPeriod}</dt>
+            <dd class="metric-value">${f.period_s} s</dd>
           </div>
-        </div>
+        </dl>
 
-        <div class="inspector-sectors-section">
-          <div class="sectors-title">${i18n.t.sectorsTitle}</div>
+        <section class="inspector-sectors-section">
+          <h3 class="sectors-title">${i18n.t.sectorsTitle}</h3>
           <div class="inspector-rose-mount"></div>
-        </div>
+        </section>
 
-        ${
-          f.ref
-            ? `
-          <div class="inspector-ref-footer">
-            ${i18n.t.admiraltyNo} <span class="font-mono">${f.ref}</span>
-          </div>
-        `
-            : ''
-        }
+        ${f.ref ? `<p class="inspector-ref-footer">${i18n.t.admiraltyNo} ${f.ref}</p>` : ''}
       `;
 
       // Mount SectorRose component
@@ -168,8 +141,6 @@ export function createInspector(
       updateSoloBtn(soloBtn, getSoloBeaconId() === beacon.id);
     }
 
-    // Always update card position on screen
-    updatePosition(state.screenPos);
   }
 
   probe.subscribe(renderCard);

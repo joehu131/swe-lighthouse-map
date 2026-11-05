@@ -14,9 +14,9 @@ export function createSearch(
 
   wrap.innerHTML = `
     <div class="search-input-wrap">
-      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" class="search-input" placeholder="${i18n.t.searchPlaceholder}" aria-label="${i18n.t.searchAria}">
-      <button class="search-clear-btn hidden" aria-label="${i18n.t.searchClearAria}">✕</button>
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" class="search-input" placeholder="${i18n.t.searchPlaceholder}" aria-label="${i18n.t.searchAria}" autocomplete="off" spellcheck="false">
+      <button type="button" class="search-clear-btn hidden" aria-label="${i18n.t.searchClearAria}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
     <ul class="search-results hidden" role="listbox"></ul>
   `;

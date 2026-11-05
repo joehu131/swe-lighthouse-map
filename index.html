@@ -5,16 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Svenska Fyrar · Lighthouses of Sweden</title>
   <meta name="description" content="Interaktiv natt- och sjökortsrelief av Sveriges alla fyrar med verkliga IALA-rytmer, sektorer och lysvidder i WebGPU.">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f59e0b'><path d='M12 2l2.5 6h-5L12 2zm-3 8h6l1.5 12h-9L9 10zm-5 1h2v2H4v-2zm16 0h2v2h-2v-2z'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e86aa6'><path d='M12 2l2.5 6h-5L12 2zm-3 8h6l1.5 12h-9L9 10zm-5 1h2v2H4v-2zm16 0h2v2h-2v-2z'/></svg>">
   <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
   <div id="app">
     <div id="initial-loader" class="initial-loader" role="status" aria-live="polite">
       <div class="loader-spinner"></div>
-      <div class="loader-caption">Loading nautical chart & lights...</div>
+      <div class="loader-caption">Loading the chart and lights…</div>
     </div>
     <canvas id="map-canvas"></canvas>
+    <div class="neatline" aria-hidden="true"></div>
   </div>
   <script type="module" src="/src/main.ts"></script>
 </body>

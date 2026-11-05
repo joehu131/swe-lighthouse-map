@@ -1,26 +1,15 @@
 /* ============================================================
    FONT CONFIGURATION -- edit here to change app typography
-   ============================================================
 
-   Current: IBM Plex Sans + IBM Plex Mono
-
-   To switch fonts, replace the @import URL and the two
-   --font-* variable values below, then save. Vite hot-reloads.
-
-   Alternatives:
-     Geist + Geist Mono:
-       family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600
-     DM Sans + DM Mono:
-       family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;600
-     Space Grotesk + Space Mono:
-       family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700
-     Inter + JetBrains Mono:
-       family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600
+   Source Serif 4: titles, light characters and place names,
+   set in italic as on Swedish nautical charts.
+   Source Sans 3: interface text and numbers.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap');
 
 :root {
-  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+  --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Source Sans 3', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, monospace;
 }

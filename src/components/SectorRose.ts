@@ -20,18 +20,13 @@ export function createSectorRose(sectors: BeaconSector[]): HTMLElement {
     return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
   }
 
-  function getSectorColor(colour: string): { fill: string; stroke: string; label: string } {
+  // Colour key used for the CSS class (wedge-red, swatch-red, ...) and the translated label
+  function getSectorColor(colour: string): { key: string; label: string } {
     const c = (colour || '').toLowerCase();
-    if (c === 'red' || c === 'r') {
-      return { fill: 'rgba(239, 68, 68, 0.75)', stroke: '#ef4444', label: i18n.t.colorRed };
-    }
-    if (c === 'green' || c === 'g') {
-      return { fill: 'rgba(16, 185, 129, 0.75)', stroke: '#10b981', label: i18n.t.colorGreen };
-    }
-    if (c === 'amber' || c === 'yellow' || c === 'y') {
-      return { fill: 'rgba(245, 158, 11, 0.8)', stroke: '#f59e0b', label: i18n.t.colorAmber };
-    }
-    return { fill: 'rgba(254, 240, 138, 0.85)', stroke: '#fef08a', label: i18n.t.colorWhite };
+    if (c === 'red' || c === 'r') return { key: 'red', label: i18n.t.colorRed };
+    if (c === 'green' || c === 'g') return { key: 'green', label: i18n.t.colorGreen };
+    if (c === 'amber' || c === 'yellow' || c === 'y') return { key: 'amber', label: i18n.t.colorAmber };
+    return { key: 'white', label: i18n.t.colorWhite };
   }
 
   // Generate SVG path for each sector wedge
@@ -49,10 +44,7 @@ export function createSectorRose(sectors: BeaconSector[]): HTMLElement {
         return `
           <circle
             cx="${cx}" cy="${cy}" r="${radius}"
-            fill="${colors.fill}"
-            stroke="${colors.stroke}"
-            stroke-width="1.5"
-            class="sector-wedge"
+            class="sector-wedge wedge-${colors.key}"
             data-index="${idx}"
             data-start="${sec.start_deg.toFixed(1)}"
             data-end="${sec.end_deg.toFixed(1)}"
@@ -70,17 +62,12 @@ export function createSectorRose(sectors: BeaconSector[]): HTMLElement {
       return `
         <path
           d="${pathData}"
-          fill="${colors.fill}"
-          stroke="${colors.stroke}"
-          stroke-width="1"
-          stroke-linejoin="round"
-          class="sector-wedge"
+          class="sector-wedge wedge-${colors.key}"
           data-index="${idx}"
           data-start="${sec.start_deg.toFixed(1)}"
           data-end="${sec.end_deg.toFixed(1)}"
           data-span="${span.toFixed(1)}"
           data-color="${colors.label}"
-          style="cursor: pointer; transition: opacity 0.15s, fill 0.15s;"
         />
       `;
     })
@@ -114,27 +101,16 @@ export function createSectorRose(sectors: BeaconSector[]): HTMLElement {
 
   container.innerHTML = `
     <div class="sector-rose-wrap">
-      <svg class="sector-rose-svg" viewBox="0 0 160 160" width="160" height="160">
-        <defs>
-          <radialGradient id="compass-bg" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="rgba(15, 23, 42, 0.95)"/>
-            <stop offset="100%" stop-color="rgba(8, 14, 26, 0.98)"/>
-          </radialGradient>
-        </defs>
-        <!-- Background Compass Dial -->
-        <circle cx="${cx}" cy="${cy}" r="${radius + 10}" fill="url(#compass-bg)" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1"/>
-        <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="rgba(255, 255, 255, 0.18)" stroke-width="1"/>
+      <svg class="sector-rose-svg" viewBox="0 0 160 160" width="160" height="160" aria-hidden="true">
+        <circle cx="${cx}" cy="${cy}" r="${radius + 10}" class="rose-dial"/>
+        <circle cx="${cx}" cy="${cy}" r="${radius}" class="rose-ring"/>
         ${ticksSvg}
         ${cardinalsSvg}
-
-        <!-- Sector Wedges -->
         <g class="sector-wedges-group">
           ${wedgesSvg}
         </g>
-
-        <!-- Center Lamp Position -->
-        <circle cx="${cx}" cy="${cy}" r="5" fill="#ffffff" stroke="#0b111e" stroke-width="2"/>
-        <circle cx="${cx}" cy="${cy}" r="2" fill="#f59e0b"/>
+        <circle cx="${cx}" cy="${cy}" r="4.5" class="rose-lamp"/>
+        <circle cx="${cx}" cy="${cy}" r="1.75" class="rose-lamp-core"/>
       </svg>
 
       <div class="sector-rose-legend">
@@ -151,8 +127,8 @@ export function createSectorRose(sectors: BeaconSector[]): HTMLElement {
             const colInfo = getSectorColor(s.colour);
             return `
               <div class="sector-table-row">
-                <span class="sector-swatch swatch-${s.colour}"></span>
-                <span class="sector-degrees font-mono">${s.start_deg.toFixed(1)}° – ${s.end_deg.toFixed(1)}°</span>
+                <span class="sector-swatch swatch-${colInfo.key}"></span>
+                <span class="sector-degrees">${s.start_deg.toFixed(1)}°–${s.end_deg.toFixed(1)}°</span>
                 <span class="sector-color-name">${colInfo.label}</span>
               </div>
             `;
@@ -173,16 +149,16 @@ export function createSectorRose(sectors: BeaconSector[]): HTMLElement {
       const span = wedge.getAttribute('data-span');
       const color = wedge.getAttribute('data-color');
       if (legendHint) {
-        legendHint.innerHTML = `<strong style="color: var(--text-main);">${color}</strong>: ${start}° – ${end}° ${span ? `(${span}°)` : ''}`;
+        legendHint.innerHTML = `<strong>${color}</strong> ${start}°–${end}°${span ? ` (${span}°)` : ''}`;
       }
-      (wedge as SVGElement).style.filter = 'brightness(1.25) drop-shadow(0 0 4px rgba(255,255,255,0.35))';
+      wedge.classList.add('is-hovered');
     });
 
     wedge.addEventListener('pointerleave', () => {
       if (legendHint) {
         legendHint.innerHTML = i18n.t.sectorsCount(sectors.length);
       }
-      (wedge as SVGElement).style.filter = 'none';
+      wedge.classList.remove('is-hovered');
     });
   });
 
