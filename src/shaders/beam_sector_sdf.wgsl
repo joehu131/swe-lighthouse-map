@@ -14,11 +14,16 @@ struct GlobalUniforms {
   filter_knobs: vec4<f32>,   // active_tier (0=all, 1=major, 2=sector, 3=minor), _, _, _
 };
 
+// 32 bytes per sector, written by buildSectorBuffer() in src/lib/sector-blend.ts
 struct SectorData {
   start_deg: f32,
   end_deg: f32,
   color_code: f32,
   pad: f32,
+  blend_start_deg: f32,  // half-width of the colour crossfade centred on start_deg
+  blend_end_deg: f32,    // half-width of the colour crossfade centred on end_deg
+  pad2: f32,
+  pad3: f32,
 };
 
 struct VertexInput {
@@ -270,25 +275,48 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     }
 
     if (in.nsec > 0u) {
-      // Evaluate sector arcs
-      var matched = false;
+      // Evaluate sector arcs with soft edges (the "arc of uncertainty" of a real sector light).
+      // Each sector gets a weight that ramps from 0 to 1 across its start and end boundaries.
+      // Two sectors sharing a boundary use the same ramp width there, so their weights sum to 1
+      // and the colours crossfade without a seam. Edges facing an unlit arc fade to dark.
+      // Floor the ramp at about one pixel of arc so edges near the lamp stay anti-aliased.
+      let aa_deg = degrees(1.0 / max(r * in.reach_screen, 1.0));
+      var coverage = 0.0;
+      var mixed = vec3<f32>(0.0);
       for (var i = 0u; i < in.nsec; i = i + 1u) {
         let sec = u_sectors[in.sec_offset + i];
         var span = (sec.end_deg - sec.start_deg + 360.0) % 360.0;
         if (span == 0.0 && sec.start_deg != sec.end_deg) {
           span = 360.0;
         }
-        let delta = (compass_deg - sec.start_deg + 360.0) % 360.0;
+        if (span < 0.01) {
+          continue;
+        }
 
-        if (delta >= 0.0 && delta <= span) {
-          fan_col = getSectorColor(sec.color_code, warm_factor);
-          matched = true;
+        var w = 1.0;
+        if (span < 359.99) {
+          // Angle past the start edge; pixels in the unlit gap count as negative when nearer the start
+          var u = (compass_deg - sec.start_deg + 360.0) % 360.0;
+          if (u > span + 0.5 * (360.0 - span)) {
+            u = u - 360.0;
+          }
+          let hs = max(sec.blend_start_deg, aa_deg);
+          let he = max(sec.blend_end_deg, aa_deg);
+          w = smoothstep(-hs, hs, u) * smoothstep(-he, he, span - u);
+        }
+
+        // Where charted sectors overlap, the earlier one keeps priority (same rule as a hard first match)
+        let take = min(w, 1.0 - coverage);
+        mixed = mixed + take * getSectorColor(sec.color_code, warm_factor);
+        coverage = coverage + take;
+        if (coverage >= 0.999) {
           break;
         }
       }
-      if (!matched) {
-        body = 0.0; // Baffled outside charted navigational sector
+      if (coverage > 0.0) {
+        fan_col = mixed / coverage;
       }
+      body = body * coverage; // Baffled (unlit) outside the charted sectors, with a soft cut-off
     }
   }
 

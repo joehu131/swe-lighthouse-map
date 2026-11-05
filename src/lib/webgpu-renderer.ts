@@ -1,6 +1,7 @@
 import type { Manifest } from './types.js';
 import { MapCamera } from './map-camera.js';
 import { ThemeManager } from './theme-manager.js';
+import { buildSectorBuffer } from './sector-blend.js';
 
 import beamWebShader from '../shaders/beam_web.wgsl?raw';
 import beamSectorShader from '../shaders/beam_sector_sdf.wgsl?raw';
@@ -92,16 +93,8 @@ export class WebGPURenderer {
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
-    // 2. Sectors Storage Buffer
-    const sectorFloatCount = Math.max(4, this.manifest.sectors.length * 4);
-    const sectorData = new Float32Array(sectorFloatCount);
-    for (let i = 0; i < this.manifest.sectors.length; i++) {
-      const s = this.manifest.sectors[i];
-      sectorData[i * 4 + 0] = s[0]; // start_deg
-      sectorData[i * 4 + 1] = s[1]; // end_deg
-      sectorData[i * 4 + 2] = s[2]; // color_code
-      sectorData[i * 4 + 3] = s[3]; // pad
-    }
+    // 2. Sectors Storage Buffer (8 floats per sector, including crossfade widths for soft edges)
+    const sectorData = buildSectorBuffer(this.manifest);
 
     this.sectorBuffer = dev.createBuffer({
       size: sectorData.byteLength,
